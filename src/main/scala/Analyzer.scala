@@ -35,7 +35,8 @@ object Analyzer {
    *                  )
    */
   def detectEntities(text: String, dictionary: List[NamedEntity]): List[NamedEntity] = {
-    ???
+    val texto= text.toLowerCase
+    dictionary.filter(e => texto.contains(e.text.toLowerCase))
   }
 
   /**
