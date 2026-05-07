@@ -7,7 +7,13 @@ import Dictionary._
 
 object Main {
   def main(args: Array[String]): Unit = {
-
+    val entities: List[NamedEntity] = List(
+      new Person("Alan Turing"),
+      new University("MIT"),
+      new ProgrammingLanguage("Scala"),
+      new Place("San Francisco")
+    )
+    entities.foreach(e => println(e.describe))
     // ------------------------------------------------------------------
     // Paso 1: Cargar diccionarios
     // ------------------------------------------------------------------
