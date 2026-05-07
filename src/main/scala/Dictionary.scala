@@ -1,3 +1,7 @@
+import scala.io.Source
+package NamedEntity{}
+import NamedEntity._
+
 // =====================================================================
 // Ejercicio 2: Cargar diccionarios de entidades
 // =====================================================================
@@ -37,9 +41,24 @@ object Dictionary {
    *   Para crear la clase correcta según el tipo se puede usar match:
    *
    */
-  def loadFromFile(filePath: String, entityType: String): List[NamedEntity] = {
-    ???
-  }
+   def loadFromFile(filePath: String, entityType: String): List[NamedEntity] = {
+     val source = Source.fromFile(filePath)
+     var list = source.getLines().drop(1).toList
+
+     val entity: String => NamedEntity = entityType match{
+      case "Person" => (t: String) => new Person(t)
+      case "Organization" => (t: String) => new Organization(t)
+      case "University" => (t: String) => new University(t)
+      case "Place" => (t: String) => new Place(t)
+      case "Technology" => (t: String) => new Technology(t)
+      case "ProgrammingLanguage" => (t: String) => new ProgrammingLanguage(t)
+      case _ => {
+      throw new IllegalArgumentException("Entity Type not Valid")
+     }}
+     var listaResultado = list.map(text=>entity(text))
+     source.close()
+     listaResultado
+   }
 
   /**
    * Carga todos los diccionarios disponibles y combina sus entidades.
@@ -49,7 +68,11 @@ object Dictionary {
    * TODO (Ejercicio 2): Implementar este método.
    *
    */
-  def loadAll(): List[NamedEntity] = {
-    ???
-  }
+   def loadAll(): List[NamedEntity] = {
+   loadFromFile("data/people.txt", "Person")
+   loadFromFile("data/organizations.txt", "Organization")
+   loadFromFile("data/languages.txt", "ProgrammingLanguage")
+   loadFromFile("data/places.txt", "Place")
+   loadFromFile("data/universities.txt", "University")
+   }
 }

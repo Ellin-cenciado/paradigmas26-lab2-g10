@@ -1,3 +1,6 @@
+package Dictionary{}
+
+import Dictionary._
 // =====================================================================
 // Ejercicio 6: Integración del sistema completo
 // =====================================================================
@@ -9,7 +12,7 @@ object Main {
     // Paso 1: Cargar diccionarios
     // ------------------------------------------------------------------
     // TODO (Ejercicio 2)
-    val dictionary: List[NamedEntity] = ???
+    val dictionary: List[NamedEntity] = Dictionary.loadAll()
 
     println(s"Diccionario cargado: ${dictionary.size} entidades.\n")
 
