@@ -1,3 +1,4 @@
+import scala.util.matching.Regex
 // =====================================================================
 // Ejercicios 3 y 5: Detección y conteo de entidades
 // =====================================================================
@@ -35,8 +36,26 @@ object Analyzer {
    *                  )
    */
   def detectEntities(text: String, dictionary: List[NamedEntity]): List[NamedEntity] = {
-    val texto= text.toLowerCase
-    dictionary.filter(e => texto.contains(e.text.toLowerCase))
+    dictionary.filter { e =>
+      // Detecta si la entidad termina en caracter especial (como C++)
+      // En ese caso no podemos usar lookahead al final porque el limite de palabra no aplica
+      // Porque el caracter especial actua como limite
+      val endsWithSpecial = e.text.lastOption.exists(!_.isLetterOrDigit)
+
+      val pattern = if (endsWithSpecial)
+        // (?i) indica que no importa las mayusculas
+        // (?<![a-zA-Z0-9]) indica que no debe haber letra o digito antes de la entidad
+        // Regex.quote escapa caracteres especiales del nombre (ej: + en C++)
+        // Se salta el lookahead (?![a-zA-Z0-9])
+        // .r indica que es una expresion regular
+        s"(?i)(?<![a-zA-Z0-9])${Regex.quote(e.text)}".r
+      else
+        // (?![a-zA-Z0-9]) indica que no debe haber letra o digito despues
+        s"(?i)(?<![a-zA-Z0-9])${Regex.quote(e.text)}(?![a-zA-Z0-9])".r
+
+      // Devuelve true si encuentra al menos una ocurrencia en el texto
+      pattern.findFirstIn(text).isDefined
+    }
   }
 
   /**
