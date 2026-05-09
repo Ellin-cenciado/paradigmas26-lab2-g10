@@ -33,12 +33,12 @@ object Main {
     //     1. Detectar entidades
     //     2. Formatear y mostrar el resultado
 
-    for ((url, titles) <- allPosts) {
-        titles.foreach { title =>
-            val entiitesFound = Analyzer.detectEntities(title, dictionary)
-            val NERResult = Formatters.formatNERResult(title, entiitesFound)
-            println(NERResult)
-        }
+    val allDetected: List[NamedEntity] = allPosts.flatMap { case (_, titles) =>
+      titles.flatMap { title =>
+        val found = Analyzer.detectEntities(title, dictionary)
+        println(Formatters.formatNERResult(title, found))
+        found
+      }
     }
 
     // ------------------------------------------------------------------
@@ -48,6 +48,7 @@ object Main {
     //   1. Recolectar TODAS las entidades detectadas en todos los posts
     //   2. Contar por tipo
     //   3. Mostrar el resumen
-
+    val counts = Analyzer.countByType(allDetected)
+    println(Formatters.formatEntityStats(counts))
   }
 }
