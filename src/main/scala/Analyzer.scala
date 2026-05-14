@@ -35,6 +35,14 @@ object Analyzer {
    *                    Person("Martin Odersky")
    *                  )
    */
+
+  // Indica que clases heredan a subclases
+  private val hierarchy = Map(
+    "Organization" -> List("University"),
+    "Technology" -> List("ProgrammingLanguage")
+  )
+
+
   def detectEntities(text: String, dictionary: List[NamedEntity]): List[NamedEntity] = {
     dictionary.filter { e =>
       // Detecta si la entidad termina en caracter especial (como C++)
@@ -82,5 +90,34 @@ object Analyzer {
   def countByType(entities: List[NamedEntity]): Map[String, Int] = {
     // Agrupar por tipo y luego transformar la lista de objetos en su tamaño
     entities.groupBy(_.entityType).map { case (tipo, lista) => tipo -> lista.size }
+  }
+
+  // Cuenta el total de apariencias de clase y sus subclases
+  def countByClass(entities: List[NamedEntity], entityType: String): Int = {
+  entityType match {
+      case "Organization"        => entities.count(_.isInstanceOf[Organization])
+      case "Technology"          => entities.count(_.isInstanceOf[Technology])
+      case "University"          => entities.count(_.isInstanceOf[University])
+      case "ProgrammingLanguage" => entities.count(_.isInstanceOf[ProgrammingLanguage])
+      case _                     => 0
+    }
+  }
+
+def countByTypeHierarchy(entities: List[NamedEntity]): Map[String, Map[String, Int]] = {
+  hierarchy.map { case (parent, children) =>
+      // cuenta el total del padre incluyendo las subclases
+      val total = countByClass(entities, parent)
+
+      // cuenta cada hijo
+      val childrenCounts = children.map { child =>
+        child -> countByClass(entities, child)
+      }.toMap
+
+      // direct = total - children
+      val direct = total - childrenCounts.values.sum
+
+      // resultado final
+      parent -> (childrenCounts + ("Total" -> total) + ("Directo" -> direct))
+    }
   }
 }
