@@ -48,7 +48,11 @@ object Main {
     //   1. Recolectar TODAS las entidades detectadas en todos los posts
     //   2. Contar por tipo
     //   3. Mostrar el resumen
+
     val counts = Analyzer.countByType(allDetected)
-    println(Formatters.formatEntityStats(counts))
+    println(s"${Formatters.formatEntityStats(counts)}\n\n")
+
+    val hierarchyCounts = Analyzer.countByTypeHierarchy(allDetected)
+    println(Formatters.formatEntityStatsHierarchy(hierarchyCounts))
   }
 }
