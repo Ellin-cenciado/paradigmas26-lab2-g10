@@ -69,4 +69,20 @@ object Formatters {
       .mkString("\n") // Une todas las lineas con un salto de linea entre cada una
     s"$header\n$lines"
   }
+
+  def formatEntityStatsHierarchy(counts: Map[String, Map[String, Int]]): String = {
+    val header = "=== Estadísticas jerárquicas ==="
+    val lines = counts.toList
+      .filter { case (_, data) => data("Total") > 0 } // se sacan las jerarquias sin apariciones
+      .sortBy { case (_, data) => -data("Total") } // ordena mayor a menor en base a "Total"
+      .map { case (parent, data) =>
+        val childLines = data
+          .filter { case (k, _) => k != "Total" && k != "Directo" } // Saca Total y Directo para dejar solo los hijos
+          .map { case (child, count) => s"  $child: $count" } 
+          .mkString("\n") // Transforma los hijos en una lista de strings
+        s"$parent: ${data("Total")}\n$childLines\n  (${parent} directa): ${data("Directo")}"
+      }
+      .mkString("\n")
+    s"$header\n$lines"
+  }
 }
